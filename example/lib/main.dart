@@ -81,7 +81,7 @@ class DemoHomePage extends StatelessWidget {
         child: Column(
           children: [
             DrawerHeader(
-              child: Center(child: const Text('drawer_header').tr(context: context)),
+              child: Center(child: const LocalizedText('drawer_header')),
             ),
             UserInfoButton(),
             BuildInfoButton(),
@@ -90,7 +90,7 @@ class DemoHomePage extends StatelessWidget {
         ),
       ),
       appBar: AppBar(
-        title: const Text('title').tr(context: context),
+        title: const LocalizedText('title'),
         backgroundColor: const Color(0xFF02579B),
         actions: <Widget>[
           IconButton(
@@ -206,7 +206,7 @@ class BuildInfoButton extends StatelessWidget {
           buildVersion: '1.42',
         );
       },
-      child: const Text('set_random_build_params').tr(context: context),
+      child: const LocalizedText('set_random_build_params'),
     );
   }
 }
@@ -223,7 +223,7 @@ class UserInfoButton extends StatelessWidget {
           userId: 'custom-id',
         );
       },
-      child: const Text('set_random_user_params').tr(context: context),
+      child: const LocalizedText('set_random_user_params'),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'dart:ui' as ui;
 
 const exampleLocales = [Locale('en', 'US'), Locale('de', 'DE')];
 
@@ -30,6 +31,47 @@ class LanguageSwitch extends StatelessWidget {
           ]..removeLast(),
         ),
       ),
+    );
+  }
+}
+
+class LocalizedText extends StatelessWidget {
+  const LocalizedText(
+    this.translationKey, {
+    this.arguments,
+    this.style,
+    this.textAlign,
+    this.fallback,
+    this.softWrap,
+    this.maxLines,
+    this.overflow,
+    this.textScaleFactor,
+    this.textDirection,
+  });
+
+  final List<String> arguments;
+  final TextOverflow overflow;
+  final String translationKey;
+  final String fallback;
+  final TextStyle style;
+  final TextAlign textAlign;
+  final bool softWrap;
+  final int maxLines;
+  final double textScaleFactor;
+  final ui.TextDirection textDirection;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      tr(translationKey, context: context, args: arguments),
+      maxLines: maxLines,
+      style: style,
+      softWrap: softWrap,
+      textAlign: textAlign,
+      overflow: overflow,
+      textScaleFactor: textScaleFactor,
+      locale: context.locale,
+      textDirection: textDirection,
     );
   }
 }
