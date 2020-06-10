@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
 import 'package:wiredash/src/common/translation/l10n/messages_pl.dart' as pl;
 import 'package:easy_localization/easy_localization.dart';
-import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'localization.dart';
 
 part 'main_localizations.dart';
@@ -129,19 +128,22 @@ class CitiesModel {
       title: 'Germany',
       description:
           "Frankfurt, a central German city on the river Main, is a major financial hub that's home to the European Central Bank. It's the birthplace of famed writer Johann Wolfgang von Goethe, whose former home is now the Goethe House Museum.",
-      image: "https://user-images.githubusercontent.com/25674767/82772933-badd0880-9e0e-11ea-9b25-0c1f084052a1.jpg",
+      image:
+          "https://user-images.githubusercontent.com/25674767/82772933-badd0880-9e0e-11ea-9b25-0c1f084052a1.jpg",
     ),
     CitiesModel(
       title: 'Ne York',
       description:
           "At its core is Manhattan, a densely populated borough that’s among the world’s major commercial, financial and cultural centers. Its iconic sites include skyscrapers such as the Empire State Building and sprawling Central Park.",
-      image: "https://user-images.githubusercontent.com/25674767/82772939-bdd7f900-9e0e-11ea-9de6-1adf978c91b4.jpg",
+      image:
+          "https://user-images.githubusercontent.com/25674767/82772939-bdd7f900-9e0e-11ea-9de6-1adf978c91b4.jpg",
     ),
     CitiesModel(
       title: 'Trinidad and Tobago',
       description:
           "Trinidad and Tobago is a dual-island Caribbean nation near Venezuela,  with distinctive Creole traditions and cuisines. Trinidad’s capital,  Port of Spain, hosts a boisterous carnival featuring calypso and soca music.",
-      image: "https://user-images.githubusercontent.com/25674767/82772941-bf092600-9e0e-11ea-9fd7-7eb40161274b.jpg",
+      image:
+          "https://user-images.githubusercontent.com/25674767/82772941-bf092600-9e0e-11ea-9fd7-7eb40161274b.jpg",
     ),
   ];
 }
