@@ -9,8 +9,14 @@ dependencies:
   flutter:
     sdk: flutter
 
+  easy_localization: ^2.3.2
+  easy_localization_loader: ^0.0.2
+
   wiredash:
     path: ../
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/translations/

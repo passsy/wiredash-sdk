@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wiredash/wiredash.dart';
 import 'package:wiredash/src/common/translation/l10n/messages_pl.dart' as pl;
+import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization_loader/easy_localization_loader.dart';
+import 'localization.dart';
 
 part 'main_localizations.dart';
 
@@ -21,38 +24,48 @@ class _ExampleAppState extends State<ExampleApp> {
 
   @override
   Widget build(BuildContext context) {
-    /// Here we wrap our app at the top level using a `Wiredash` widget. This requires us to pass
-    /// the `projectId` and `secret` obtained from the "configuration" section of your console.
-    /// Notice we are also passing our `_navigatorKey` to both widgets.
-    /// Wiredash also allows you to setup custom themes and translations using `WiredashThemeData` and
-    /// `WiredashOptionsData`. Both of these are optional but should your heart desire an extra layer
-    /// of customizability, you can make wiredash your own.
-    /// Read more about translations support in the package's README.
-    return Wiredash(
-      projectId: "YOUR-PROJECT-ID",
-      secret: "YOUR-SECRET",
-      navigatorKey: _navigatorKey,
-      options: WiredashOptionsData(
-        showDebugFloatingEntryPoint: true,
+    return EasyLocalization(
+      supportedLocales: exampleLocales,
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en', 'US'),
+      child: Builder(builder: (context) {
+        /// Here we wrap our app at the top level using a `Wiredash` widget. This requires us to pass
+        /// the `projectId` and `secret` obtained from the "configuration" section of your console.
+        /// Notice we are also passing our `_navigatorKey` to both widgets.
+        /// Wiredash also allows you to setup custom themes and translations using `WiredashThemeData` and
+        /// `WiredashOptionsData`. Both of these are optional but should your heart desire an extra layer
+        /// of customizability, you can make wiredash your own.
+        /// Read more about translations support in the package's README.
+        return Wiredash(
+          projectId: "YOUR-PROJECT-ID",
+          secret: "YOUR-SECRET",
+          navigatorKey: _navigatorKey,
+          options: WiredashOptionsData(
+            showDebugFloatingEntryPoint: true,
 
-        /// Uncomment below to see how custom translations work
-        // customTranslations: {
-        //   const Locale.fromSubtags(languageCode: 'en'):
-        //       const DemoCustomTranslations(),
-        //   const Locale.fromSubtags(languageCode: 'pl'):
-        //       const DemoPolishTranslations(),
-        // },
+            /// Uncomment below to see how custom translations work
+            // customTranslations: {
+            //   const Locale.fromSubtags(languageCode: 'en'):
+            //       const DemoCustomTranslations(),
+            //   const Locale.fromSubtags(languageCode: 'pl'):
+            //       const DemoPolishTranslations(),
+            // },
 
-        /// Uncomment below to override default device locale
-        // locale: const Locale('de'),
-        // textDirection: TextDirection.rtl,
-      ),
-      theme: WiredashThemeData(brightness: Theme.of(context).brightness),
-      child: MaterialApp(
-        navigatorKey: _navigatorKey,
-        title: 'Adventure 🌎',
-        home: const DemoHomePage(),
-      ),
+            /// Uncomment below to override default device locale
+            locale: context.locale,
+            // textDirection: TextDirection.rtl,
+          ),
+          theme: WiredashThemeData(brightness: Theme.of(context).brightness),
+          child: MaterialApp(
+            navigatorKey: _navigatorKey,
+            title: tr('drawer_header'),
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            home: const DemoHomePage(),
+          ),
+        );
+      }),
     );
   }
 }
@@ -66,17 +79,18 @@ class DemoHomePage extends StatelessWidget {
       backgroundColor: const Color(0xFFF6F9FC),
       drawer: Drawer(
         child: Column(
-          children: const <Widget>[
+          children: [
             DrawerHeader(
-              child: Center(child: Text('Wiredash example')),
+              child: Center(child: const Text('drawer_header').tr(context: context)),
             ),
             UserInfoButton(),
             BuildInfoButton(),
+            LanguageSwitch(),
           ],
         ),
       ),
       appBar: AppBar(
-        title: const Text('Adventure 🌎'),
+        title: const Text('title').tr(context: context),
         backgroundColor: const Color(0xFF02579B),
         actions: <Widget>[
           IconButton(
@@ -115,22 +129,19 @@ class CitiesModel {
       title: 'Germany',
       description:
           "Frankfurt, a central German city on the river Main, is a major financial hub that's home to the European Central Bank. It's the birthplace of famed writer Johann Wolfgang von Goethe, whose former home is now the Goethe House Museum.",
-      image:
-          "https://user-images.githubusercontent.com/25674767/82772933-badd0880-9e0e-11ea-9b25-0c1f084052a1.jpg",
+      image: "https://user-images.githubusercontent.com/25674767/82772933-badd0880-9e0e-11ea-9b25-0c1f084052a1.jpg",
     ),
     CitiesModel(
       title: 'Ne York',
       description:
           "At its core is Manhattan, a densely populated borough that’s among the world’s major commercial, financial and cultural centers. Its iconic sites include skyscrapers such as the Empire State Building and sprawling Central Park.",
-      image:
-          "https://user-images.githubusercontent.com/25674767/82772939-bdd7f900-9e0e-11ea-9de6-1adf978c91b4.jpg",
+      image: "https://user-images.githubusercontent.com/25674767/82772939-bdd7f900-9e0e-11ea-9de6-1adf978c91b4.jpg",
     ),
     CitiesModel(
       title: 'Trinidad and Tobago',
       description:
           "Trinidad and Tobago is a dual-island Caribbean nation near Venezuela,  with distinctive Creole traditions and cuisines. Trinidad’s capital,  Port of Spain, hosts a boisterous carnival featuring calypso and soca music.",
-      image:
-          "https://user-images.githubusercontent.com/25674767/82772941-bf092600-9e0e-11ea-9fd7-7eb40161274b.jpg",
+      image: "https://user-images.githubusercontent.com/25674767/82772941-bf092600-9e0e-11ea-9fd7-7eb40161274b.jpg",
     ),
   ];
 }
@@ -195,7 +206,7 @@ class BuildInfoButton extends StatelessWidget {
           buildVersion: '1.42',
         );
       },
-      child: const Text('Set random build parameters'),
+      child: const Text('set_random_build_params').tr(context: context),
     );
   }
 }
@@ -212,7 +223,7 @@ class UserInfoButton extends StatelessWidget {
           userId: 'custom-id',
         );
       },
-      child: const Text('Set random user parameters'),
+      child: const Text('set_random_user_params').tr(context: context),
     );
   }
 }
