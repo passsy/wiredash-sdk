@@ -8,6 +8,7 @@ import 'package:wiredash/src/common/network/network_manager.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/device_info.dart';
 import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
+import 'package:wiredash/src/wiredash_controller.dart';
 
 import 'feedback_sheet.dart';
 
@@ -51,6 +52,8 @@ class FeedbackModel with ChangeNotifier {
 
   bool get loading => _loading;
 
+  ValueNotifier<LocalizedTextKeyValuePair> l10nOverride = ValueNotifier(null);
+
   void _handleUiChange() {
     switch (_feedbackUiState) {
       case FeedbackUiState.intro:
@@ -58,17 +61,19 @@ class FeedbackModel with ChangeNotifier {
         break;
       case FeedbackUiState.capture:
         _captureKey.currentState.show().then((image) {
-          screenshot = image;
-          _feedbackUiState = FeedbackUiState.feedback;
-          _navigatorKey.currentState.push(
-            DismissiblePageRoute(
-              builder: (context) => FeedbackSheet(),
-              background: image,
-              onPagePopped: () {
-                feedbackUiState = FeedbackUiState.hidden;
-              },
-            ),
-          );
+          if (image != null) {
+            screenshot = image;
+            _feedbackUiState = FeedbackUiState.feedback;
+            _navigatorKey.currentState.push(
+              DismissiblePageRoute(
+                builder: (context) => FeedbackSheet(),
+                background: image,
+                onPagePopped: () {
+                  feedbackUiState = FeedbackUiState.hidden;
+                },
+              ),
+            );
+          }
         });
         break;
       case FeedbackUiState.success:
@@ -102,6 +107,7 @@ class FeedbackModel with ChangeNotifier {
     }).then((value) {
       _clearFeedback();
     }).whenComplete(() {
+      l10nOverride.value = null;
       loading = false;
     });
   }
@@ -151,7 +157,7 @@ Thanks!
   }
 }
 
-enum FeedbackType { bug, improvement, praise }
+enum FeedbackType { bug, improvement, praise, l10n }
 
 extension FeedbackTypeMembers on FeedbackType {
   String get label => const {

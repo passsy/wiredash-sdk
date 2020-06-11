@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:ui' as ui;
 
+import 'package:wiredash/wiredash.dart';
+
 const exampleLocales = [Locale('en', 'US'), Locale('de', 'DE')];
 
 class LanguageSwitch extends StatelessWidget {
@@ -12,7 +14,8 @@ class LanguageSwitch extends StatelessWidget {
     final currentLocale = Localizations.localeOf(context);
     return FlatButton(
       onPressed: () {
-        final nextIndex = (exampleLocales.indexOf(currentLocale) + 1) % exampleLocales.length;
+        final nextIndex =
+            (exampleLocales.indexOf(currentLocale) + 1) % exampleLocales.length;
         EasyLocalization.of(context).locale = exampleLocales[nextIndex];
       },
       child: DefaultTextStyle(
@@ -22,7 +25,9 @@ class LanguageSwitch extends StatelessWidget {
           children: [
             for (final locale in exampleLocales) ...[
               Text(locale.languageCode.toString(),
-                  style: locale == currentLocale ? const TextStyle(fontWeight: FontWeight.bold) : null),
+                  style: locale == currentLocale
+                      ? const TextStyle(fontWeight: FontWeight.bold)
+                      : null),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text("/"),
@@ -62,16 +67,21 @@ class LocalizedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      tr(translationKey, context: context, args: arguments),
-      maxLines: maxLines,
-      style: style,
-      softWrap: softWrap,
-      textAlign: textAlign,
-      overflow: overflow,
-      textScaleFactor: textScaleFactor,
-      locale: context.locale,
-      textDirection: textDirection,
+    final text = tr(translationKey, context: context, args: arguments);
+    return LocalizationHelper(
+      translationKey: translationKey,
+      visibleText: text,
+      text: Text(
+        text,
+        maxLines: maxLines,
+        style: style,
+        softWrap: softWrap,
+        textAlign: textAlign,
+        overflow: overflow,
+        textScaleFactor: textScaleFactor,
+        locale: context.locale,
+        textDirection: textDirection,
+      ),
     );
   }
 }

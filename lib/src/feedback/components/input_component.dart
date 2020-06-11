@@ -8,7 +8,7 @@ import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/widgets/wiredash_icons.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
 
-enum InputComponentType { feedback, email }
+enum InputComponentType { feedback, email, l18n }
 
 class InputComponent extends StatefulWidget {
   final InputComponentType type;
@@ -16,15 +16,17 @@ class InputComponent extends StatefulWidget {
   final FocusNode focusNode;
   final String prefill;
   final bool autofocus;
+  final void Function(String) onChange;
 
-  const InputComponent(
-      {Key key,
-      @required this.type,
-      @required this.formKey,
-      @required this.focusNode,
-      this.prefill = '',
-      this.autofocus = false})
-      : assert(type != null),
+  const InputComponent({
+    Key key,
+    @required this.type,
+    @required this.formKey,
+    @required this.focusNode,
+    this.prefill = '',
+    this.autofocus = false,
+    this.onChange,
+  })  : assert(type != null),
         assert(formKey != null),
         super(key: key);
 
@@ -39,6 +41,9 @@ class _InputComponentState extends State<InputComponent> {
   void initState() {
     super.initState();
     _textEditingController = TextEditingController(text: widget.prefill);
+    _textEditingController.addListener(() {
+      widget.onChange?.call(_textEditingController.text);
+    });
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       if (widget.autofocus) {
         widget.focusNode.requestFocus();
@@ -109,8 +114,8 @@ class _InputComponentState extends State<InputComponent> {
     switch (widget.type) {
       case InputComponentType.feedback:
         return TextCapitalization.sentences;
-        break;
       case InputComponentType.email:
+      case InputComponentType.l18n:
         return TextCapitalization.none;
     }
     return TextCapitalization.sentences;
@@ -119,8 +124,8 @@ class _InputComponentState extends State<InputComponent> {
   TextInputType _getKeyboardType() {
     switch (widget.type) {
       case InputComponentType.feedback:
+      case InputComponentType.l18n:
         return TextInputType.text;
-        break;
       case InputComponentType.email:
         return TextInputType.emailAddress;
     }
@@ -130,6 +135,7 @@ class _InputComponentState extends State<InputComponent> {
   IconData _getIcon() {
     switch (widget.type) {
       case InputComponentType.feedback:
+      case InputComponentType.l18n:
         return WiredashIcons.edit;
       case InputComponentType.email:
         return WiredashIcons.email;
@@ -140,6 +146,9 @@ class _InputComponentState extends State<InputComponent> {
 
   String _getHintText() {
     switch (widget.type) {
+      case InputComponentType.l18n:
+        // TODO internationalize
+        return "Replace with";
       case InputComponentType.feedback:
         return WiredashLocalizations.of(context).inputHintFeedback;
       case InputComponentType.email:
@@ -178,6 +187,10 @@ class _InputComponentState extends State<InputComponent> {
         break;
       case InputComponentType.email:
         Provider.of<UserManager>(context, listen: false).userEmail = input;
+        break;
+      case InputComponentType.l18n:
+        widget.onChange?.call(_textEditingController.text);
+        // do nothing
         break;
     }
   }

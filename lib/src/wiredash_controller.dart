@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:wiredash/src/wiredash_widget.dart';
 
@@ -67,4 +69,34 @@ class WiredashController {
   /// The [Confidential] widget can automatically hide sensitive widgets from
   /// being recorded in a feedback screenshot.
   ValueNotifier<bool> get visible => _state.captureKey.currentState.visible;
+
+  ValueNotifier<bool> get localizationMode =>
+      _state.captureKey.currentState.highlightL10n;
+
+  ValueNotifier<LocalizedTextKeyValuePair> get localizationOverride =>
+      _state.feedbackModel.l10nOverride;
+
+  void reportL10nIssue(LocalizedTextKeyValuePair text) {
+    _state.editText(text);
+  }
+}
+
+class LocalizedTextKeyValuePair {
+  final String key;
+  final String text;
+  final Locale locale;
+
+  const LocalizedTextKeyValuePair({
+    @required this.key,
+    @required this.text,
+    @required this.locale,
+  });
+
+  LocalizedTextKeyValuePair copyWith({String text}) {
+    return LocalizedTextKeyValuePair(
+      key: this.key,
+      text: text ?? this.text,
+      locale: this.locale,
+    );
+  }
 }

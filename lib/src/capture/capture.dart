@@ -61,6 +61,8 @@ class CaptureState extends State<Capture>
   ui.Image _screenshot;
   Uint8List _screenshotSketch;
 
+  ValueNotifier<bool> highlightL10n;
+
   @override
   void initState() {
     super.initState();
@@ -77,17 +79,21 @@ class CaptureState extends State<Capture>
     _captureUiState = ValueNotifier(CaptureUiState.hidden);
     _sketcherController = SketcherController();
     _visible = ValueNotifier(false);
+    highlightL10n = ValueNotifier(false);
 
     _captureUiState.addListener(() {
       switch (_captureUiState.value) {
         case CaptureUiState.hidden:
           _visible.value = false;
+          highlightL10n.value = false;
           break;
         case CaptureUiState.navigate:
           _visible.value = true;
+          highlightL10n.value = true;
           break;
         case CaptureUiState.draw:
           _visible.value = true;
+          highlightL10n.value = false;
           break;
       }
     });
@@ -156,6 +162,7 @@ class CaptureState extends State<Capture>
     _captureUiState.dispose();
     _sketcherController.dispose();
     _visible.dispose();
+    highlightL10n.dispose();
     super.dispose();
   }
 
@@ -285,7 +292,7 @@ class CaptureState extends State<Capture>
         // Don't do anything
         break;
       case CaptureUiState.navigate:
-        _animateToHidden();
+        _animateToHidden(permanent: true);
         break;
       case CaptureUiState.draw:
         _animateToNavigate();
@@ -318,15 +325,16 @@ class CaptureState extends State<Capture>
     }
   }
 
-  TickerFuture _animateToHidden() {
+  TickerFuture _animateToHidden({@required bool permanent}) {
     _sketcherController.clearGestures();
     _captureUiState.value = CaptureUiState.hidden;
 
-    _captureCompleter.complete(_screenshotSketch);
-    _captureCompleter = null;
-    _screenshot = null;
-    _screenshotSketch = null;
-
+    if (permanent) {
+      _captureCompleter.complete(_screenshotSketch);
+      _captureCompleter = null;
+      _screenshot = null;
+      _screenshotSketch = null;
+    }
     _spotlightKey.currentState.hide();
     _animationControllerDrawer.reverse();
     return _animationControllerScreen.reverse();
@@ -384,13 +392,34 @@ class CaptureState extends State<Capture>
 
   Future<void> _takeScreenshotAndHide() async {
     _screenshotSketch = await _sketcherController.recordOntoImage(_screenshot);
-    _animateToHidden();
+    _animateToHidden(permanent: true);
   }
 
   Future<Uint8List> show() {
     _animateToNavigate();
-    _captureCompleter = Completer<Uint8List>();
+    if (_captureCompleter == null) {
+      _captureCompleter = Completer<Uint8List>();
+    }
     return _captureCompleter.future;
+  }
+
+  void pause() {
+    _animateToHidden(permanent: false);
+  }
+
+  void resume() {
+    _animateToNavigate();
+
+    // wait until animated completed, then forward to draw
+    AnimationStatusListener listener;
+    listener = (AnimationStatus status) {
+      if (status == AnimationStatus.completed) {
+        // listen only once
+        _animationControllerScreen.removeStatusListener(listener);
+        _animateToDraw();
+      }
+    };
+    _animationControllerScreen.addStatusListener(listener);
   }
 
   ValueNotifier<bool> get visible => _visible;

@@ -12,9 +12,11 @@ import 'package:wiredash/src/common/theme/wiredash_theme_data.dart';
 import 'package:wiredash/src/common/translation/wiredash_localizations.dart';
 import 'package:wiredash/src/common/user/user_manager.dart';
 import 'package:wiredash/src/common/utils/build_info.dart';
+import 'package:wiredash/src/common/widgets/dismissible_page_route.dart';
 import 'package:wiredash/src/common/widgets/floating_entry_point.dart';
 import 'package:wiredash/src/common/widgets/wiredash_scaffold.dart';
 import 'package:wiredash/src/feedback/feedback_model.dart';
+import 'package:wiredash/src/feedback/suggest_translation_sheet.dart';
 import 'package:wiredash/src/wiredash_controller.dart';
 
 /// Capture in-app user feedback, wishes, ratings and much more
@@ -126,7 +128,7 @@ class WiredashState extends State<Wiredash> {
   UserManager userManager;
   BuildInfoManager buildInfoManager;
 
-  FeedbackModel _feedbackModel;
+  FeedbackModel feedbackModel;
 
   WiredashOptionsData _options;
   WiredashThemeData _theme;
@@ -148,7 +150,7 @@ class WiredashState extends State<Wiredash> {
     userManager = UserManager();
     buildInfoManager = BuildInfoManager(PlatformBuildInfo());
 
-    _feedbackModel = FeedbackModel(
+    feedbackModel = FeedbackModel(
       captureKey,
       navigatorKey,
       networkManager,
@@ -159,7 +161,7 @@ class WiredashState extends State<Wiredash> {
 
   @override
   void dispose() {
-    _feedbackModel.dispose();
+    feedbackModel.dispose();
     super.dispose();
   }
 
@@ -182,7 +184,7 @@ class WiredashState extends State<Wiredash> {
       providers: [
         Provider.value(value: networkManager),
         Provider.value(value: userManager),
-        ChangeNotifierProvider.value(value: _feedbackModel),
+        ChangeNotifierProvider.value(value: feedbackModel),
       ],
       child: WiredashOptions(
         data: _options,
@@ -204,6 +206,26 @@ class WiredashState extends State<Wiredash> {
   }
 
   void show() {
-    _feedbackModel.show();
+    feedbackModel.show();
+  }
+
+  void editText(LocalizedTextKeyValuePair text) {
+    captureKey.currentState.pause();
+    navigatorKey.currentState
+        .push(DismissiblePageRoute(
+      builder: (context) => SuggestTranslationSheet(
+        text: text,
+        onChangeTranslation: (value) {
+          feedbackModel.l10nOverride.value = value;
+        },
+      ),
+      onPagePopped: () {
+        feedbackModel.l10nOverride.value = null;
+        captureKey.currentState.show();
+      },
+    ))
+        .then((value) {
+      captureKey.currentState.resume();
+    });
   }
 }
